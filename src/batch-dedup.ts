@@ -575,6 +575,7 @@ export class BatchDeduplicator {
       const match = await this.matchStoredMessageToIncoming(
         tail[index]!,
         stored,
+        params.message,
         incomingHash,
         tailHashes[index]!,
         incomingRawPayloadContent,
