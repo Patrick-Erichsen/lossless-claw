@@ -68,7 +68,7 @@ function buildApi(
       subagent: {
         run: vi.fn(),
         waitForRun: vi.fn(),
-        getSession: vi.fn(),
+        getSessionMessages: vi.fn(),
         deleteSession: vi.fn(),
       },
       ...(options?.includeRuntimeLlm === false
@@ -707,6 +707,43 @@ describe("lcm plugin registration", () => {
     expect(deleteSession).toHaveBeenCalledWith({
       sessionKey: "agent:main:subagent:delegated-expansion",
       deleteTranscript: true,
+    });
+  });
+
+  it("reads delegated replies through the OpenClaw 2026.7.2 subagent adapter", async () => {
+    const dbPath = join(tmpdir(), `lossless-claw-${Date.now()}-${Math.random().toString(16)}.db`);
+    dbPaths.add(dbPath);
+
+    const { api, getFactory } = buildApi({ enabled: true, dbPath });
+    const getSessionMessages = api.runtime.subagent.getSessionMessages as ReturnType<typeof vi.fn>;
+    getSessionMessages.mockResolvedValue({
+      messages: [{ role: "assistant", content: "completed focus brief" }],
+    });
+    lcmPlugin.register(api);
+
+    const engine = getFactory()!() as {
+      deps?: {
+        callGateway: (params: {
+          method: string;
+          params?: Record<string, unknown>;
+        }) => Promise<unknown>;
+      };
+    };
+
+    const result = await engine.deps?.callGateway({
+      method: "sessions.get",
+      params: {
+        key: "agent:main:subagent:focus",
+        limit: 80,
+      },
+    });
+
+    expect(result).toEqual({
+      messages: [{ role: "assistant", content: "completed focus brief" }],
+    });
+    expect(getSessionMessages).toHaveBeenCalledWith({
+      sessionKey: "agent:main:subagent:focus",
+      limit: 80,
     });
   });
 

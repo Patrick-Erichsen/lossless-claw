@@ -1406,7 +1406,7 @@ function createLcmDependencies(
             timeoutMs: (params.params?.timeoutMs as number) ?? params.timeoutMs,
           });
         case "sessions.get":
-          return sub.getSession({
+          return sub.getSessionMessages({
             sessionKey: String(params.params?.key ?? ""),
             limit: params.params?.limit as number | undefined,
           });
