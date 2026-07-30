@@ -1,5 +1,19 @@
 # @martian-engineering/lossless-claw
 
+## 0.15.2
+
+### Patch Changes
+
+- [#1044](https://github.com/Martian-Engineering/lossless-claw/pull/1044) [`8ac4720`](https://github.com/Martian-Engineering/lossless-claw/commit/8ac47205d2598c0875b5efde93cb836a15986439) Thanks [@bowenluo718](https://github.com/bowenluo718)! - Fix duplicate ingestion of the same message when the transcript is
+  redacted by `logging.redactPatterns` and the live `afterTurn` batch is
+  not. Stable assistant response and unambiguous tool-call identities are
+  persisted in a new `messages.stable_event_key` column, checked before
+  ingest side effects, and protected by a partial unique index. Messages
+  without an unambiguous stable identity retain the existing
+  content-based and redaction-aware deduplication behavior.
+
+- [#1042](https://github.com/Martian-Engineering/lossless-claw/pull/1042) [`4a19e16`](https://github.com/Martian-Engineering/lossless-claw/commit/4a19e160d107593ee30e7a2d4c74da7acc2a5d47) Thanks [@gorkem2020](https://github.com/gorkem2020)! - Require transcript provenance before untimestamped metadata-body matches can support covered-frontier replay alignment, while keeping unannounced recaps and heuristic matches fail-closed.
+
 ## 0.15.1
 
 <!-- release-rollback-version: 0.15.0 -->
